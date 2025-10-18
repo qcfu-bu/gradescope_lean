@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
 curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
+source ~/.elan/env
 
-~/.elan/bin/lean --version
+lean --version
 
 cd /autograder/source
 
 echo "lake update"
-~/.elan/bin/lake update 
+lake update
 
 echo "lake build"
-~/.elan/bin/lake build gradescope_lean
+lake build gradescope_lean

@@ -168,8 +168,7 @@ def gradeSubmission (solutionEnv submissionEnv : Environment) : IO (Array Exerci
 
 /-- Main -/
 
-unsafe def main (args : List String) : IO Unit := do
-  enableInitializersExecution
+def main (args : List String) : IO Unit := do
   initSearchPath (← findSysroot)
 
   let isLocal := args.any (fun arg => arg == "--local")
@@ -183,8 +182,7 @@ unsafe def main (args : List String) : IO Unit := do
 
   let mut output := ""
 
-  -------------------------------------------------------------------------------------------
-  -- Read the solution and submission files.
+  -- read the solution and submission files
 
   let solutionContents <- IO.FS.readFile solutionPath
   let solutionCtx := Parser.mkInputContext solutionContents solutionName
@@ -192,8 +190,7 @@ unsafe def main (args : List String) : IO Unit := do
   let submissionContents <- IO.FS.readFile submissionPath
   let submissionCtx := Parser.mkInputContext submissionContents submissionName
 
-  -------------------------------------------------------------------------------------------
-  -- Parse the solution and grading metadata.
+  -- parse the grading metadata
 
   let (solutionHeader, parserState, messages) <- Parser.parseHeader solutionCtx
   let (solutionHeaderEnv, messages) <- processHeader solutionHeader {} messages solutionCtx
@@ -216,8 +213,7 @@ unsafe def main (args : List String) : IO Unit := do
       ++ "error is unexpected. Please notify your instructor and provide a "
       ++ "link to your submission."
 
-  -------------------------------------------------------------------------------------------
-  -- Parse the submission.
+  -- parse the submission.
 
   let (submissionHeader, parserState, messages) <- Parser.parseHeader submissionCtx
   let (submissionHeaderEnv, messages) <- processHeader submissionHeader {} messages submissionCtx
@@ -238,14 +234,12 @@ unsafe def main (args : List String) : IO Unit := do
   let messages := submissionFrontEndState.commandState.messages
   let submissionEnv := submissionFrontEndState.commandState.env
 
-  -------------------------------------------------------------------------------------------
-  -- Grade the submission.
+  -- grade the submission
 
   let tests <- gradeSubmission solutionEnv submissionEnv
   let results : GradingResults := { tests, output }
 
-  -------------------------------------------------------------------------------------------
-  -- Output.
+  -- output results
 
   if isLocal then
     println! (toJson results).pretty

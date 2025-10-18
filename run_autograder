@@ -3,4 +3,6 @@
 cp /autograder/submission/*lean /autograder/source/submission.lean
 cd /autograder/source
 
-~/.elan/bin/lake exe gradescope_lean solution/solution.lean submission.lean
+source ~/.elan/env
+
+lake exe gradescope_lean solution/solution.lean submission.lean

@@ -8,6 +8,7 @@ name = "AutograderLib"
 [[lean_exe]]
 name = "gradescope_lean"
 root = "Main"
+buildType = "release"
 supportInterpreter = true
 
 [[require]]
