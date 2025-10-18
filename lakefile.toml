@@ -1,0 +1,16 @@
+name = "gradescope_lean"
+version = "0.1.0"
+defaultTargets = ["gradescope_lean"]
+
+[[lean_lib]]
+name = "AutograderLib"
+
+[[lean_exe]]
+name = "gradescope_lean"
+root = "Main"
+supportInterpreter = true
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.24.0"
