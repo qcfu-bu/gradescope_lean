@@ -5,4 +5,4 @@ cd /autograder/source
 
 source ~/.elan/env
 
-lake exe gradescope_lean solution/solution.lean submission.lean
+time lake exe gradescope_lean solution/solution.lean submission.lean

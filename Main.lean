@@ -37,10 +37,10 @@ def getErrorsStr (ml : MessageLog) : IO String := do
 
 -- Throw error and show it to the student, optionally providing additional
 -- information for the instructor only
-def exitWithError {α} (errMsg : String) (instructorInfo: String := "")
-  : IO α := do
+def exitWithError {α} (isLocal : Bool) (errMsg : String) (instructorInfo := "") : IO α := do
   let result : FailureResult := {output := errMsg}
-  IO.FS.writeFile resultsJsonPath (toJson result).pretty
+  if !isLocal then
+    IO.FS.writeFile resultsJsonPath (toJson result).pretty
   throw <| IO.userError (errMsg ++ "\n" ++ instructorInfo)
 
 /-- Grading. -/
@@ -196,7 +196,7 @@ def main (args : List String) : IO Unit := do
   let (solutionHeaderEnv, messages) <- processHeader solutionHeader {} messages solutionCtx
 
   if messages.hasErrors then
-    exitWithError (instructorInfo := (← getErrorsStr messages)) <|
+    exitWithError isLocal (instructorInfo := (← getErrorsStr messages)) <|
       "There was an error processing the assignment template's imports. This "
       ++ "error is unexpected. Please notify your instructor and provide a "
       ++ "link to your submission."
@@ -208,7 +208,7 @@ def main (args : List String) : IO Unit := do
   let solutionEnv := solutionFrontEndState.commandState.env
 
   if messages.hasErrors then
-    exitWithError (instructorInfo := (← getErrorsStr messages)) <|
+    exitWithError isLocal (instructorInfo := (← getErrorsStr messages)) <|
       "There was an error processing the assignment template. This "
       ++ "error is unexpected. Please notify your instructor and provide a "
       ++ "link to your submission."
