@@ -201,7 +201,7 @@ def main (args : List String) : IO Unit := do
       ++ "error is unexpected. Please notify your instructor and provide a "
       ++ "link to your submission."
 
-  let solutionCmdState : Command.State := Command.mkState solutionHeaderEnv messages {}
+  let solutionCmdState := Command.mkState solutionHeaderEnv messages {}
   let solutionFrontEndState <- IO.processCommands solutionCtx parserState solutionCmdState
 
   let messages := solutionFrontEndState.commandState.messages
@@ -228,7 +228,7 @@ def main (args : List String) : IO Unit := do
       ++ err
     else ""
 
-  let submissionCmdState : Command.State := Command.mkState submissionHeaderEnv messages {}
+  let submissionCmdState := Command.mkState submissionHeaderEnv messages {}
   let submissionFrontEndState <- IO.processCommands submissionCtx parserState submissionCmdState
 
   let messages := submissionFrontEndState.commandState.messages
