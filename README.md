@@ -21,11 +21,11 @@ theorem problem {a b c: Prop} : a ∧ (a → b) ∧ (b → c) → c := by
 ```
 
 In the solution file, add `import AutograderLib` to the header.
-This allow the annotation of theorems with the `autogradedProof <points>` attribute.
+This allows the annotation of theorems with the `autogradedProof <points>` attribute.
 Theorems marked by this attribute will be graded and count for `<points>` amount of points.
 
 **Note:**
-Assignment files given to students do not need `import AutograderLib` or annotate `autogradedProof`. 
+Assignment files given to students do not need to import `AutograderLib` or annotate `autogradedProof`. 
 
 Place the solution file in the [solution](./solution/) directory.
 
