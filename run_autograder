@@ -4,6 +4,5 @@ cp /autograder/submission/*lean /autograder/source/submission.lean
 cd /autograder/source
 
 source ~/.elan/env
-lake exe cache unpack
 
 time lake exe gradescope_lean solution/solution.lean submission.lean
