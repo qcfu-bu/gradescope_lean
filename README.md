@@ -3,7 +3,7 @@ A Gradescope autograder for [Lean](https://lean-lang.org/) based on [robertylewi
 
 ## Dependencies
 The autograder imports [Mathlib](https://github.com/leanprover-community/mathlib4) as a dependency.
-If Mathlib is not needed for the assignment, remove the `[[require]]` section in [lakefile.toml](./lakefile.toml).
+If Mathlib is not needed for the assignment, feel free to remove the `[[require]]` section in [lakefile.toml](./lakefile.toml).
 
 ## Usage
 The autograder expects a `solution.lean` file that acts as a specification for grading. 
