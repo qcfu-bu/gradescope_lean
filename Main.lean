@@ -1,12 +1,18 @@
 import Lean
 import AutograderLib
 
+/-!
+# Gradescope autograder for Lean
+
+`AutograderLib` provided by <robertylewis/lean4-autograder-main>
+-/
+
 open Lean IO System Elab Meta
 
 def submissionUploadDir : FilePath := "/autograder/submission"
 def resultsJsonPath : FilePath := ".." / "results" / "results.json"
 
-/-- Core data structures for Gradescope. -/
+/-! ### Core data structures for Gradescope -/
 
 structure FailureResult where
   output : String
@@ -27,7 +33,7 @@ structure GradingResults where
   output_format: String := "text"
   deriving ToJson, Repr
 
-/-- Error reporting. -/
+/-! ### Error reporting -/
 
 def getErrorsStr (ml : MessageLog) : IO String := do
   let errorMsgs := ml.toList.filter (fun m => m.severity == .error)
@@ -43,7 +49,7 @@ def exitWithError {α} (isLocal : Bool) (errMsg : String) (instructorInfo := "")
     IO.FS.writeFile resultsJsonPath (toJson result).pretty
   throw <| IO.userError (errMsg ++ "\n" ++ instructorInfo)
 
-/-- Grading. -/
+/-! ### Grading. -/
 
 def defaultValidAxioms : Array Name :=
   #["Classical.choice".toName,
@@ -166,7 +172,7 @@ def gradeSubmission (solutionEnv submissionEnv : Environment) : IO (Array Exerci
 
   return exerciseResults
 
-/-- Main -/
+/-! ### Main -/
 
 def main (args : List String) : IO Unit := do
   initSearchPath (← findSysroot)
@@ -241,8 +247,7 @@ def main (args : List String) : IO Unit := do
 
   -- output results
 
-  if isLocal then
-    println! (toJson results).pretty
-    return
+  if !isLocal then
+    IO.FS.writeFile resultsJsonPath (toJson results).pretty
 
-  IO.FS.writeFile resultsJsonPath (toJson results).pretty
+  println! (toJson results).pretty
