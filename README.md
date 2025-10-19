@@ -7,7 +7,7 @@ If Mathlib is not needed for the assignment, remove the `[[require]]` section in
 
 ## Usage
 The autograder expects a `solution.lean` file that acts as a specification for grading. 
-The solution file not need to be completed (i.e. proofs can contain `sorry`).
+The solution file does not need to be completed (i.e. proofs can contain `sorry`).
 
 Example `solution.lean`:
 
