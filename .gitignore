@@ -28,4 +28,4 @@ Temporary Items
 # Lean artifacts and Gradescope archive
 /.lake
 solution/*
-Archive.zip
+*.zip
