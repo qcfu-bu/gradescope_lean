@@ -7,7 +7,7 @@ import AutograderLib
 `AutograderLib` provided by <robertylewis/lean4-autograder-main>
 -/
 
-open Lean IO System Elab Meta
+open Lean IO System Elab
 
 def submissionUploadDir : FilePath := "/autograder/submission"
 def resultsJsonPath : FilePath := ".." / "results" / "results.json"
@@ -43,9 +43,9 @@ def getErrorsStr (ml : MessageLog) : IO String := do
 
 -- Throw error and show it to the student, optionally providing additional
 -- information for the instructor only
-def exitWithError {α} (isLocal : Bool) (errMsg : String) (instructorInfo := "") : IO α := do
+def exitWithError {α} (isLocal? : Bool) (errMsg : String) (instructorInfo := "") : IO α := do
   let result : FailureResult := {output := errMsg}
-  if !isLocal then
+  if !isLocal? then
     IO.FS.writeFile resultsJsonPath (toJson result).pretty
   throw <| IO.userError (errMsg ++ "\n" ++ instructorInfo)
 
@@ -101,7 +101,7 @@ def gradeSubmission (solutionEnv submissionEnv : Environment) : IO (Array Exerci
     let answer := (submissionEnv.find? exercise.name).get!
 
     -- check if answer has the same type as exercise
-    let (isEq, _, _) <- (isDefEq exercise.type answer.type).toIO ctx cstate
+    let (isEq, _, _) <- (Meta.isDefEq exercise.type answer.type).toIO ctx cstate
     if !isEq then
       exerciseResults := exerciseResults.push {
         name   := exercise.name,
@@ -173,17 +173,38 @@ def gradeSubmission (solutionEnv submissionEnv : Environment) : IO (Array Exerci
   return exerciseResults
 
 /-! ### Main -/
+structure Config where
+  solution   : Option String
+  submission : Option String
+  isLocal?  : Bool
+
+def parseArgs (args : List String) : IO Config := do
+  match args with
+  | "--solution" :: solution :: args =>
+    let cfg <- parseArgs args
+    return { cfg with solution }
+  | "--submission" :: submission :: args =>
+    let cfg <- parseArgs args
+    return { cfg with submission }
+  | "--local" :: args =>
+    let cfg <- parseArgs args
+    return { cfg with isLocal? := true }
+  | [] => return {
+      solution := none,
+      submission := none,
+      isLocal? := false
+    }
+  | _ => throw <| IO.userError "Error parsing arguments."
 
 def main (args : List String) : IO Unit := do
   initSearchPath (← findSysroot)
 
-  let isLocal := args.any (fun arg => arg == "--local")
-  let args := args.filter (fun arg => arg != "--local")
+  let cfg <- parseArgs args
 
-  let solutionName := args[0]!
+  let solutionName := cfg.solution.get!
   let solutionPath : FilePath := solutionName
 
-  let submissionName := args[1]!
+  let submissionName := cfg.submission.get!
   let submissionPath : FilePath := submissionName
 
   let mut output := ""
@@ -202,7 +223,7 @@ def main (args : List String) : IO Unit := do
   let (solutionHeaderEnv, messages) <- processHeader solutionHeader {} messages solutionCtx
 
   if messages.hasErrors then
-    exitWithError isLocal (instructorInfo := (← getErrorsStr messages)) <|
+    exitWithError cfg.isLocal? (instructorInfo := (← getErrorsStr messages)) <|
       "There was an error processing the assignment template's imports. This "
       ++ "error is unexpected. Please notify your instructor and provide a "
       ++ "link to your submission."
@@ -214,7 +235,7 @@ def main (args : List String) : IO Unit := do
   let solutionEnv := solutionFrontEndState.commandState.env
 
   if messages.hasErrors then
-    exitWithError isLocal (instructorInfo := (← getErrorsStr messages)) <|
+    exitWithError cfg.isLocal? (instructorInfo := (← getErrorsStr messages)) <|
       "There was an error processing the assignment template. This "
       ++ "error is unexpected. Please notify your instructor and provide a "
       ++ "link to your submission."
@@ -247,7 +268,7 @@ def main (args : List String) : IO Unit := do
 
   -- output results
 
-  if !isLocal then
+  if !cfg.isLocal? then
     IO.FS.writeFile resultsJsonPath (toJson results).pretty
 
   println! (toJson results).pretty
