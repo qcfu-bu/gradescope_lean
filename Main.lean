@@ -18,20 +18,20 @@ structure FailureResult where
   output : String
   score : Float := 0.0
   output_format : String := "text"
-  deriving ToJson, Repr
+  deriving ToJson
 
 structure ExerciseResult where
   name : Name
   score : Float
   status : String
   output : String
-  deriving ToJson, Repr
+  deriving ToJson
 
 structure GradingResults where
   tests : Array ExerciseResult
   output: String
   output_format: String := "text"
-  deriving ToJson, Repr
+  deriving ToJson
 
 /-! ### Error reporting -/
 
