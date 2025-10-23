@@ -87,6 +87,7 @@ def gradeSubmission (solutionEnv submissionEnv : Environment) : IO (Array Exerci
 
   let mut exerciseResults : Array ExerciseResult := #[]
   for (exercise, pts) in gradingInfo do
+    println! s!"grading {exercise.name}"
     -- check if answer is present
     if let none := submissionEnv.find? exercise.name then
       exerciseResults := exerciseResults.push {
@@ -173,6 +174,7 @@ def gradeSubmission (solutionEnv submissionEnv : Environment) : IO (Array Exerci
   return exerciseResults
 
 /-! ### Main -/
+
 structure Config where
   solution   : Option String
   submission : Option String
