@@ -32,6 +32,9 @@ Place the solution file in the [solution](./solution/) directory.
 Finally, compress all file using `zip -r autograder.zip ./*` and upload `autograder.zip` to Gradescope.
 
 ## Performance Considerations
+The Gradescope server should be configured with as much CPU and RAM as possible. 
+Otherwise, Gradescope may terminate the autograder prematurely if grading uses more resources than allocated to the server.
+
 Due to the large size of Mathlib, you should only get *components* of the Mathlib cache that is depended on
 by the assignment. Otherwise, Gradescope might choke when initializing its virtualization for each student submission. 
 This is done by modifying `lake exe cache get <Mathlib-component>` in [setup.sh](./setup.sh) to the relevant library.
