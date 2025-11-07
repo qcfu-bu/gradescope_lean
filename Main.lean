@@ -81,6 +81,8 @@ def gradeSubmission (solutionEnv submissionEnv : Environment) : IO (Array Exerci
   for (name, constInfo) in solutionEnv.constants do
     if let some pts := autogradedProofAttr.getParam? solutionEnv name then
       gradingInfo := gradingInfo.push (constInfo, pts)
+    else if let some pts := autogradedDefAttr.getParam? solutionEnv name then
+      gradingInfo := gradingInfo.push (constInfo, pts)
 
   let ctx : Core.Context := { fileName := "", fileMap := default }
   let cstate : Core.State := { env := solutionEnv }
@@ -177,6 +179,7 @@ def gradeSubmission (solutionEnv submissionEnv : Environment) : IO (Array Exerci
 structure Config where
   solution   : Option String
   submission : Option String
+  header     : Option String
   isLocal?  : Bool
 
 def parseArgs (args : List String) : IO Config := do
@@ -187,12 +190,16 @@ def parseArgs (args : List String) : IO Config := do
   | "--submission" :: submission :: args =>
     let cfg <- parseArgs args
     return { cfg with submission }
+  | "--header" :: header :: args =>
+    let cfg <- parseArgs args
+    return { cfg with header }
   | "--local" :: args =>
     let cfg <- parseArgs args
     return { cfg with isLocal? := true }
   | [] => return {
       solution := none,
       submission := none,
+      header := none,
       isLocal? := false
     }
   | _ => throw <| IO.userError "Error parsing arguments."
@@ -207,6 +214,9 @@ def main (args : List String) : IO Unit := do
 
   let submissionName := cfg.submission.get!
   let submissionPath : FilePath := submissionName
+
+  let headerName := cfg.header.getD submissionName
+  let headerPath : FilePath := headerName
 
   let mut output := ""
 
@@ -243,7 +253,10 @@ def main (args : List String) : IO Unit := do
 
   -- parse the submission.
 
-  let (submissionHeader, parserState, messages) <- Parser.parseHeader submissionCtx
+  let headerContents <- IO.FS.readFile headerPath
+  let headerCtx := Parser.mkInputContext headerContents submissionName
+
+  let (submissionHeader, parserState, messages) <- Parser.parseHeader headerCtx
   let (submissionHeaderEnv, messages) <- processHeader submissionHeader {} messages submissionCtx
 
   let err ← getErrorsStr messages
