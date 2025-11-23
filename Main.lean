@@ -204,7 +204,8 @@ def parseArgs (args : List String) : IO Config := do
     }
   | _ => throw <| IO.userError "Error parsing arguments."
 
-def main (args : List String) : IO Unit := do
+unsafe def main (args : List String) : IO Unit := do
+  enableInitializersExecution
   initSearchPath (← findSysroot)
 
   let cfg <- parseArgs args
