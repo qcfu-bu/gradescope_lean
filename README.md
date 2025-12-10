@@ -29,7 +29,26 @@ Assignment files given to students do not need to import `AutograderLib` or anno
 
 Place the solution file in the [solution](./solution/) directory.
 
-Finally, compress all file using `zip -r autograder.zip ./*` and upload `autograder.zip` to Gradescope.
+### Packaging the Autograder for Gradescope
+
+Compress all file using `zip -r autograder.zip ./*` and upload `autograder.zip` to Gradescope.
+
+### For Local Testing
+
+To test the autograder locally, first use the following command to build the autograder executable:
+
+```bash
+lake update
+lake build gradescope_lean
+```
+
+Then run the autograder executable with the path to the solution file and the path to a student submission:
+
+```bash
+lake exe gradescope_lean --solution ./solution/solution.lean --submission submission.lean --local
+```
+
+The `--local` flag indicates that the autograder is being run locally.
 
 ## Performance Considerations
 The Gradescope server should be configured with as much CPU and RAM as possible. 
